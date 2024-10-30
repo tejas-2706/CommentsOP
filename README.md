@@ -34,3 +34,13 @@
 ---
 
 Keep this README.md file handy. Following these steps should get everything up and running smoothly!
+
+
+
+![ss1_frontend](https://github.com/user-attachments/assets/1d393947-1cfe-482e-855b-805f10830a27)
+
+![ss2_frontend](https://github.com/user-attachments/assets/93723b50-d7cd-41dc-89ab-e2a15c8f2c6c)
+
+![backend](https://github.com/user-attachments/assets/c1a33a9b-b5e7-4c85-8948-3a4cb2c2d989)
+
+
