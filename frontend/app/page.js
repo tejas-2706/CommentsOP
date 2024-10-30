@@ -4,13 +4,21 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import TextAreaComment from "./components/TextAreaComment";
-const socket = io("http://localhost:3000");
+const socket = io("http://localhost:3000"); // backend url
 import Input from '@mui/joy/Input';
 
 export default function Home() {
   const [username, setUsername] = useState("");
   const [comment, setComment] = useState("");
   const [message, setMessage] = useState([]);
+  const [data, setData] = useState([]);
+  useEffect(()=>{
+    async function fetchData() {
+      const response = await axios.get("http://localhost:3000/api/commentslist"); 
+      setData(response.data);
+    }
+    fetchData();
+  },[])
   useEffect(() => {
     socket.on('comment', ({username,comment}) => {
       setMessage((prevmessage) => [...prevmessage, {username,comment}]);
@@ -21,10 +29,10 @@ export default function Home() {
   }, [])
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // await axios.post("http://localhost:3000/api/comment", {
-    //   username,
-    //   comment
-    // });
+    await axios.post("http://localhost:3000/api/comment", {
+      username,
+      comment
+    });
     socket.emit('comment',{username,comment})
     setUsername(''); 
     setComment(''); 
@@ -47,7 +55,7 @@ export default function Home() {
 
           <label htmlFor="TextAdded">Comment Length <b>{comment.length}</b></label>
           <br /> <br />
-          <label htmlFor="comments"> {message.length} Comments </label>
+          <label htmlFor="comments">Live {message.length} Comments </label>
 
           {/* <input className="" value={comment} onChange={(e) => {
             setComment(e.target.value)
@@ -64,6 +72,15 @@ export default function Home() {
             <p className="bg-gray-100 border rounded-md m-2 shadow-md" key={index}> @Anonymous <br />{msg.comment}</p>
         })}
       </div>
+      <div>Previous {data.length} Comments</div>
+      <div>
+        {data.map((data,index)=>{
+          return <div key={index} className="bg-gray-100 border rounded-md m-2 shadow-md">
+            @{data.username} <br />
+            {data.comment}
+          </div>
+        })}
+      </div>
 
     </div>
   );
@@ -74,77 +91,3 @@ export default function Home() {
 
 
 
-// page.js
-// "use client";
-// import axios from "axios";
-// import { useEffect, useState } from "react";
-// import { io } from "socket.io-client";
-
-// const socket = io("http://localhost:3000");
-
-// export default function Home() {
-//   const [username, setUsername] = useState("");
-//   const [comment, setComment] = useState("");
-//   const [messages, setMessages] = useState([]);
-
-//   useEffect(() => {
-//     socket.on('comment', (comment) => {
-//       setMessages((prevMessages) => [...prevMessages, comment]);
-//     });
-    
-//     return () => {
-//       socket.off('comment');
-//     };
-//   }, []);
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault(); // Prevent default form submission
-//     try {
-//       await axios.post("http://localhost:3000/api/comment", {
-//         username,
-//         comment,
-//       });
-//       socket.emit('comment', { username, comment }); // Emit the new comment
-//       setUsername('');
-//       setComment('');
-//     } catch (error) {
-//       console.error('Error submitting comment:', error);
-//     }
-//   };
-
-//   return (
-//     <div>
-//       <form onSubmit={handleSubmit}>
-//         <div>
-//           <label htmlFor="username">Username</label>
-//           <input
-//             placeholder="Enter Username"
-//             type="text"
-//             id="username"
-//             value={username}
-//             onChange={(e) => setUsername(e.target.value)}
-//           />
-//           <br />
-//           <label htmlFor="comment">Comments</label>
-//           <input
-//             id="comment"
-//             type="text"
-//             placeholder="Enter Your Comment"
-//             value={comment}
-//             onChange={(e) => setComment(e.target.value)}
-//           />
-//           <br />
-//           <button type="submit">Send</button>
-//         </div>
-//       </form>
-
-//       <div>
-//         {messages.map((msg, index) => (
-//           <p key={index}>
-//             {msg.username}: {msg.comment}
-//           </p>
-//         ))}
-//       </div>
-//     </div>
-//   );
-// }
